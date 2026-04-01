@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Top Students Leaderboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f5f6fb;
+        --panel: #ffffff;
+        --text: #1f2430;
+        --muted: #5b6270;
+        --accent: #2b7cff;
+        --border: #e3e6ef;
+        --shadow: 0 10px 40px rgba(31, 36, 48, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "DM Sans", "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at 20% 20%, #f0f4ff, #f5f6fb 35%),
+          radial-gradient(circle at 80% 0%, #eef7ff, #f5f6fb 30%);
+        color: var(--text);
+      }
+
+      header {
+        padding: 32px 24px 16px;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+      }
+
+      .subhead {
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .controls {
+        max-width: 1100px;
+        margin: 0 auto 12px;
+        padding: 0 24px 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .control {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+      }
+
+      label {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      select,
+      input[type="number"] {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 14px;
+        background: #fdfdff;
+      }
+
+      main {
+        max-width: 1100px;
+        margin: 0 auto 40px;
+        padding: 0 24px 24px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--panel);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+      }
+
+      thead {
+        background: #eef3ff;
+      }
+
+      th,
+      td {
+        padding: 12px 14px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+      }
+
+      th {
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+      tbody tr:hover {
+        background: #f7f9ff;
+      }
+
+      .pill {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: #e8f1ff;
+        color: var(--accent);
+        font-weight: 600;
+        font-size: 13px;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+      .error {
+        color: #c62828;
+      }
+
+      @media (max-width: 800px) {
+        table,
+        thead,
+        tbody,
+        th,
+        td,
+        tr {
+          display: block;
+        }
+        thead {
+          display: none;
+        }
+        tr {
+          margin-bottom: 14px;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          overflow: hidden;
+        }
+        td {
+          border: none;
+          border-bottom: 1px solid var(--border);
+          position: relative;
+          padding-left: 130px;
+        }
+        td:last-child {
+          border-bottom: none;
+        }
+        td::before {
+          position: absolute;
+          left: 14px;
+          top: 12px;
+          font-weight: 600;
+          color: var(--muted);
+          content: attr(data-label);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Top Students Leaderboard</h1>
+      <p class="subhead">
+        Ranks are based on total marks (numeric cells only) and GPA as secondary
+        tie-breaker.
+      </p>
+    </header>
+
+    <section class="controls">
+      <div class="control">
+        <label for="limit">Show</label>
+        <select id="limit">
+          <option value="10">Top 10</option>
+          <option value="25" selected>Top 25</option>
+          <option value="50">Top 50</option>
+          <option value="100">Top 100</option>
+          <option value="all">All</option>
+        </select>
+      </div>
+      <div class="control">
+        <label for="group">Group</label>
+        <select id="group">
+          <option value="all" selected>All</option>
+          <option value="Science">Science</option>
+          <option value="Commerce">Commerce</option>
+          <option value="Arts">Arts</option>
+        </select>
+      </div>
+      <div class="control">
+        <label for="search">Search name/id</label>
+        <input id="search" type="text" placeholder="e.g. 20251526 or Taha" />
+      </div>
+    </section>
+
+    <main>
+      <div id="status" class="muted" style="margin-bottom: 12px">
+        Loading merged-results.json…
+      </div>
+      <div style="overflow-x: auto">
+        <table aria-label="Leaderboard">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Student</th>
+              <th>Total Marks</th>
+              <th>GPA</th>
+              <th>CGPA</th>
+              <th>Subjects</th>
+              <th>Group</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </main>
+
+    <script>
+      const statusEl = document.getElementById("status");
+      const rowsEl = document.getElementById("rows");
+      const limitEl = document.getElementById("limit");
+      const groupEl = document.getElementById("group");
+      const searchEl = document.getElementById("search");
+
+      function numeric(val) {
+        const n = Number(val);
+        return Number.isFinite(n) ? n : 0;
+      }
+
+      function computeTotal(subjects) {
+        if (!Array.isArray(subjects)) return 0;
+        return subjects.reduce((sum, sub) => sum + numeric(sub.total), 0);
+      }
+
+      function formatNumber(val) {
+        return typeof val === "number" && Number.isFinite(val)
+          ? val.toFixed(2).replace(/\.00$/, "")
+          : "—";
+      }
+
+      function renderTable(data) {
+        rowsEl.innerHTML = "";
+        data.forEach((item, idx) => {
+          const tr = document.createElement("tr");
+          const cells = [
+            { label: "Rank", value: idx + 1 },
+            {
+              label: "Student",
+              value: `<div>${item.name || "Unknown"}</div><div class="muted">${item.studentId || ""}</div>`,
+            },
+            { label: "Total Marks", value: item.totalMarks },
+            { label: "GPA", value: formatNumber(item.gpa) },
+            { label: "CGPA", value: formatNumber(item.cgpa) },
+            { label: "Subjects", value: item.subjects?.length || 0 },
+            { label: "Group", value: item.group || "—" },
+          ];
+
+          cells.forEach((cell) => {
+            const td = document.createElement("td");
+            td.setAttribute("data-label", cell.label);
+            td.innerHTML = cell.value;
+            tr.appendChild(td);
+          });
+          rowsEl.appendChild(tr);
+        });
+      }
+
+      function applyFilters(base) {
+        const query = searchEl.value.trim().toLowerCase();
+        const groupFilter = groupEl.value;
+
+        let filtered = base;
+        if (groupFilter !== "all") {
+          filtered = filtered.filter(
+            (r) => (r.group || "").toLowerCase() === groupFilter.toLowerCase(),
+          );
+        }
+        if (query) {
+          filtered = filtered.filter((r) => {
+            const name = (r.name || "").toLowerCase();
+            const id = String(r.studentId || "");
+            return name.includes(query) || id.includes(query);
+          });
+        }
+
+        const limit =
+          limitEl.value === "all" ? filtered.length : Number(limitEl.value);
+        return filtered.slice(0, limit);
+      }
+
+      async function load() {
+        try {
+          const res = await fetch("merged-results.json");
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const raw = await res.json();
+
+          const clean = raw
+            .filter((item) => item && !item.error)
+            .map((item) => ({
+              ...item,
+              totalMarks: computeTotal(item.subjects),
+              gpa: numeric(item.gpa),
+              cgpa: numeric(item.cgpa),
+            }))
+            .sort((a, b) => {
+              if (b.totalMarks !== a.totalMarks)
+                return b.totalMarks - a.totalMarks;
+              if (b.gpa !== a.gpa) return b.gpa - a.gpa;
+              return String(a.name || "").localeCompare(String(b.name || ""));
+            });
+
+          const render = () => {
+            const view = applyFilters(clean);
+            renderTable(view);
+            statusEl.textContent = `${view.length} shown · ${clean.length} total ranked entries`;
+          };
+
+          limitEl.addEventListener("change", render);
+          groupEl.addEventListener("change", render);
+          searchEl.addEventListener("input", () => {
+            window.clearTimeout(searchEl._timer);
+            searchEl._timer = window.setTimeout(render, 120);
+          });
+
+          render();
+        } catch (err) {
+          statusEl.innerHTML = `<span class="error">Failed to load merged-results.json: ${err.message}</span>`;
+        }
+      }
+
+      load();
+    </script>
+  </body>
+</html>
