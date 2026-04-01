@@ -3,7 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="by alonearif" />
+    <meta
+      name="description"
+      content="NGDC Half Yearly 2026 leaderboard with search, filters, dense ranking, and subject-wise detailed marks. by alonearif."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="NGDC - Half Yearly 2026 Leaderboard" />
+    <meta
+      property="og:description"
+      content="Check the NGDC Half Yearly 2026 exam results leaderboard. Search, filter, and view subject-wise marks with detailed rankings."
+    />
+    <meta
+      property="og:image"
+      content="https://ngdc.ac.bd/wp-content/uploads/2023/04/20170107021535_IMG_1933_1-e1722879644195.jpg"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="NGDC - Half Yearly 2026 Leaderboard" />
+    <meta
+      name="twitter:description"
+      content="Check the NGDC Half Yearly 2026 exam results leaderboard with detailed rankings and subject-wise marks."
+    />
+    <meta
+      name="twitter:image"
+      content="https://ngdc.ac.bd/wp-content/uploads/2023/04/20170107021535_IMG_1933_1-e1722879644195.jpg"
+    />
     <title>NGDC - Half Yearly 2026 Leaderboard</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -308,8 +333,8 @@
         <a href="https://instagram.com/arf.envoy" target="_blank" rel="noopener"
           >Arif</a
         >
-        for making this happen. Data is
-        as-is from the original source, with minimal cleaning. <br />
+        for making this possible. Data is as-is from the original source, with
+        minimal cleaning. <br />
         <a
           href="https://easycollegemate.com/ecmngdc/result"
           target="_blank"
@@ -525,10 +550,19 @@
 
       function assignRanks(list) {
         let currentRank = 0;
+        let lastCGPA = null;
+        let lastGPA = null;
         let lastTotal = null;
         return list.map((item) => {
-          if (lastTotal === null || item.totalMarks !== lastTotal) {
+          if (
+            lastCGPA === null ||
+            item.cgpa !== lastCGPA ||
+            item.gpa !== lastGPA ||
+            item.totalMarks !== lastTotal
+          ) {
             currentRank += 1; // dense ranking: 1,2,2,3
+            lastCGPA = item.cgpa;
+            lastGPA = item.gpa;
             lastTotal = item.totalMarks;
           }
           return { ...item, rank: currentRank };
@@ -574,9 +608,10 @@
               cgpa: numeric(item.cgpa),
             }))
             .sort((a, b) => {
+              if (b.cgpa !== a.cgpa) return b.cgpa - a.cgpa;
+              if (b.gpa !== a.gpa) return b.gpa - a.gpa;
               if (b.totalMarks !== a.totalMarks)
                 return b.totalMarks - a.totalMarks;
-              if (b.gpa !== a.gpa) return b.gpa - a.gpa;
               return String(a.name || "").localeCompare(String(b.name || ""));
             });
 
