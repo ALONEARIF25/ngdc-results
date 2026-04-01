@@ -3,11 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Top Students Leaderboard</title>
+    <meta name="description" content="by alonearif" />
+    <title>NGDC - Half Yearly 2026 Leaderboard</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bitcount+Single:wght@100..900&family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@100..900&family=Sekuya&family=Space+Grotesk:wght@300..700&family=Stack+Sans+Headline:wght@200..700&family=Zalando+Sans+Expanded:ital,wght@0,200..900;1,200..900&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -24,13 +26,46 @@
       * {
         box-sizing: border-box;
       }
+
+      /* Stack Sans Headline default weight 600 for the layout */
+      .stack-sans-headline-main {
+        font-family:
+          "Stack Sans Headline", "Space Grotesk", "Hind Siliguri", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 600;
+        font-style: normal;
+      }
+
       body {
         margin: 0;
-        font-family: "DM Sans", "Segoe UI", sans-serif;
+        font-family:
+          "Stack Sans Headline", "Space Grotesk", "Hind Siliguri", sans-serif;
         background:
           radial-gradient(circle at 20% 20%, #f0f4ff, #f5f6fb 35%),
           radial-gradient(circle at 80% 0%, #eef7ff, #f5f6fb 30%);
         color: var(--text);
+      }
+
+      button,
+      input,
+      select,
+      option,
+      label,
+      table,
+      th,
+      td,
+      .controls,
+      .control,
+      .toggle-btn {
+        font-family:
+          "Stack Sans Headline", "Space Grotesk", "Hind Siliguri", sans-serif;
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: underline;
+        font-weight: 500;
+        transition: color 140ms ease;
       }
 
       header {
@@ -71,18 +106,38 @@
         box-shadow: var(--shadow);
       }
 
+      .control.search {
+        flex: 1 1 260px;
+        max-width: 460px;
+      }
+
       label {
         color: var(--muted);
         font-size: 14px;
       }
 
       select,
-      input[type="number"] {
+      input[type="number"],
+      input[type="text"] {
         border: 1px solid var(--border);
         border-radius: 8px;
-        padding: 6px 10px;
+        padding: 8px 12px;
         font-size: 14px;
         background: #fdfdff;
+        transition:
+          border-color 140ms ease,
+          box-shadow 140ms ease;
+      }
+
+      input[type="text"] {
+        width: 100%;
+      }
+
+      input[type="text"]:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(43, 124, 255, 0.12);
       }
 
       main {
@@ -141,50 +196,131 @@
         color: #c62828;
       }
 
+      .fail {
+        color: #c62828;
+        font-weight: 700;
+      }
+
+      .toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 8px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: #eef3ff;
+        color: var(--text);
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          background 140ms ease,
+          border-color 140ms ease;
+      }
+
+      .toggle-btn:hover {
+        background: #e1e9ff;
+        border-color: #d5def7;
+      }
+
+      .detail-row {
+        display: none;
+        background: #fafbff;
+      }
+
+      .detail-row td {
+        border-top: none;
+        padding: 0;
+      }
+
+      .detail-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .detail-table th,
+      .detail-table td {
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--border);
+        font-size: 13px;
+      }
+
+      tr.open + .detail-row {
+        display: table-row;
+      }
+
+      @media (max-width: 700px) {
+        header {
+          padding: 20px 16px 10px;
+        }
+        .controls {
+          padding: 0 16px 8px;
+          gap: 10px;
+        }
+        .control {
+          width: 100%;
+          justify-content: space-between;
+        }
+        .control.search {
+          width: 100%;
+        }
+        main {
+          padding: 0 16px 20px;
+        }
+      }
+
       @media (max-width: 800px) {
-        table,
-        thead,
-        tbody,
-        th,
-        td,
-        tr {
-          display: block;
+        main {
+          padding: 0 12px 18px;
         }
-        thead {
-          display: none;
-        }
-        tr {
-          margin-bottom: 14px;
-          border: 1px solid var(--border);
+        table {
+          min-width: 720px;
           border-radius: 10px;
-          overflow: hidden;
         }
+        th,
         td {
-          border: none;
-          border-bottom: 1px solid var(--border);
-          position: relative;
-          padding-left: 130px;
+          padding: 10px 10px;
+          font-size: 13px;
         }
-        td:last-child {
-          border-bottom: none;
+        .toggle-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          margin-top: 6px;
         }
-        td::before {
-          position: absolute;
-          left: 14px;
-          top: 12px;
-          font-weight: 600;
-          color: var(--muted);
-          content: attr(data-label);
+        /* keep detail rows compact */
+        .detail-row td {
+          padding: 0;
+        }
+        .detail-table th,
+        .detail-table td {
+          padding: 6px 8px;
+          font-size: 12px;
         }
       }
     </style>
   </head>
   <body>
     <header>
-      <h1>Top Students Leaderboard</h1>
+      <h1>NGDC - Half Yearly 2026</h1>
       <p class="subhead">
-        Ranks are based on total marks (numeric cells only) and GPA as secondary
-        tie-breaker.
+        The official website sucked, so heres a leaderboard. Say thanks to
+        <a href="https://instagram.com/arf.envoy" target="_blank" rel="noopener"
+          >Arif</a
+        >
+        for scraping and merging the results into a single JSON file. Data is
+        as-is from the original source, with minimal cleaning. <br />
+        <a
+          href="https://easycollegemate.com/ecmngdc/result"
+          target="_blank"
+          rel="noopener"
+          >Click here</a
+        >
+        to visit official website and search ID to download transcript PDF.
+        <br />
+        <span style="text-decoration: underline"
+          >Let me know if you want arts and commerce results too.</span
+        >
       </p>
     </header>
 
@@ -208,9 +344,15 @@
           <option value="Arts">Arts</option>
         </select>
       </div>
-      <div class="control">
-        <label for="search">Search name/id</label>
-        <input id="search" type="text" placeholder="e.g. 20251526 or Taha" />
+      <div class="control search">
+        <label for="search">Search</label>
+        <input
+          id="search"
+          type="text"
+          placeholder="Search by student name or ID"
+          autocomplete="off"
+          spellcheck="false"
+        />
       </div>
     </section>
 
@@ -261,28 +403,135 @@
 
       function renderTable(data) {
         rowsEl.innerHTML = "";
-        data.forEach((item, idx) => {
+        data.forEach((item) => {
           const tr = document.createElement("tr");
           const cells = [
-            { label: "Rank", value: idx + 1 },
+            { label: "Rank", value: item.rank, className: "col-rank" },
             {
               label: "Student",
               value: `<div>${item.name || "Unknown"}</div><div class="muted">${item.studentId || ""}</div>`,
+              className: "col-student",
             },
-            { label: "Total Marks", value: item.totalMarks },
-            { label: "GPA", value: formatNumber(item.gpa) },
-            { label: "CGPA", value: formatNumber(item.cgpa) },
-            { label: "Subjects", value: item.subjects?.length || 0 },
-            { label: "Group", value: item.group || "—" },
+            {
+              label: "Total Marks",
+              value: item.totalMarks,
+              className: "detail-col",
+            },
+            {
+              label: "GPA",
+              value: formatNumber(item.gpa),
+              className: "detail-col",
+            },
+            {
+              label: "CGPA",
+              value:
+                item.cgpa === 0
+                  ? '<span class="fail">FAIL</span>'
+                  : formatNumber(item.cgpa),
+              className: "detail-col",
+            },
+            {
+              label: "Subjects",
+              value: item.subjects?.length || 0,
+              className: "detail-col",
+            },
+            {
+              label: "Group",
+              value: item.group || "—",
+              className: "detail-col",
+            },
           ];
 
           cells.forEach((cell) => {
             const td = document.createElement("td");
             td.setAttribute("data-label", cell.label);
+            if (cell.className) td.className = cell.className;
             td.innerHTML = cell.value;
             tr.appendChild(td);
           });
+
+          // Mobile details toggle button inside student cell
+          const studentCell = tr.querySelector(".col-student");
+          if (studentCell) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "toggle-btn";
+            btn.textContent = "Show detailed marks";
+            btn.addEventListener("click", () => {
+              const isOpen = tr.classList.toggle("open");
+              btn.textContent = isOpen
+                ? "Hide detailed marks"
+                : "Show detailed marks";
+            });
+            studentCell.appendChild(btn);
+          }
           rowsEl.appendChild(tr);
+
+          // Detail row with subject-wise marks
+          const detailTr = document.createElement("tr");
+          detailTr.className = "detail-row";
+          const detailTd = document.createElement("td");
+          detailTd.colSpan = 7;
+
+          const subjects = Array.isArray(item.subjects) ? item.subjects : [];
+          const subjectRows = subjects
+            .map((sub) => {
+              const safe = (v) =>
+                v === null || v === undefined || v === "" ? "—" : v;
+              return `
+                <tr>
+                  <td>${safe(sub.code)}</td>
+                  <td>${safe(sub.subject)}</td>
+                  <td>${safe(sub.cq)}</td>
+                  <td>${safe(sub.mcq)}</td>
+                  <td>${safe(sub.pr)}</td>
+                  <td>${safe(sub.total)}</td>
+                  <td>${safe(sub.grade)}</td>
+                  <td>${safe(sub.point)}</td>
+                </tr>`;
+            })
+            .join("");
+
+          detailTd.innerHTML = `
+            <div style="padding: 12px 14px;">
+              <div style="font-weight:700; margin-bottom:8px;">Subject-wise marks</div>
+              <div style="overflow-x:auto;">
+                <table class="detail-table" aria-label="Subject details for ${
+                  item.name || "student"
+                }">
+                  <thead>
+                    <tr>
+                      <th>Code</th>
+                      <th>Subject</th>
+                      <th>CQ</th>
+                      <th>MCQ</th>
+                      <th>PR</th>
+                      <th>Total</th>
+                      <th>Grade</th>
+                      <th>Point</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${subjectRows || '<tr><td colspan="8" class="muted">No subject data</td></tr>'}
+                  </tbody>
+                </table>
+              </div>
+            </div>`;
+
+          detailTr.appendChild(detailTd);
+          rowsEl.appendChild(detailTr);
+        });
+      }
+
+      function assignRanks(list) {
+        let currentRank = 0;
+        let lastTotal = null;
+        return list.map((item) => {
+          if (lastTotal === null || item.totalMarks !== lastTotal) {
+            currentRank += 1; // dense ranking: 1,2,2,3
+            lastTotal = item.totalMarks;
+          }
+          return { ...item, rank: currentRank };
         });
       }
 
@@ -304,6 +553,7 @@
           });
         }
 
+        // Keep original ranks; do not recompute on filtered subset.
         const limit =
           limitEl.value === "all" ? filtered.length : Number(limitEl.value);
         return filtered.slice(0, limit);
@@ -330,10 +580,12 @@
               return String(a.name || "").localeCompare(String(b.name || ""));
             });
 
+          const ranked = assignRanks(clean);
+
           const render = () => {
-            const view = applyFilters(clean);
+            const view = applyFilters(ranked);
             renderTable(view);
-            statusEl.textContent = `${view.length} shown · ${clean.length} total ranked entries`;
+            statusEl.textContent = `${view.length} shown · ${ranked.length} total ranked entries`;
           };
 
           limitEl.addEventListener("change", render);
