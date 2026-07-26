@@ -327,10 +327,10 @@
   </head>
   <body>
     <header>
-      <h1>NGDC - Half Yearly 2026</h1>
+      <h1 id="pageTitle">NGDC - Half Yearly 2026</h1>
       <p class="subhead">
         The official website sucked, so heres a leaderboard. Say thanks to
-        <a href="https://instagram.com/arf.env" target="_blank" rel="noopener"
+        <a href="https://instagram.com/arf.envoy" target="_blank" rel="noopener"
           >Arif</a
         >
         for making this possible. Data is as-is from the original source, with
@@ -351,6 +351,13 @@
 
     <section class="controls">
       <div class="control">
+        <label for="exam">Exam</label>
+        <select id="exam">
+          <option value="merged-results.json" selected>Half Yearly 2026</option>
+          <option value="merged-results-2.json">Annual 2026</option>
+        </select>
+      </div>
+      <div class="control">
         <label for="limit">Show</label>
         <select id="limit">
           <option value="10">Top 10</option>
@@ -367,6 +374,14 @@
           <option value="Science">Science</option>
           <option value="Commerce">Commerce</option>
           <option value="Arts">Arts</option>
+        </select>
+      </div>
+      <div class="control">
+        <label for="cgpa">CGPA</label>
+        <select id="cgpa">
+          <option value="all" selected>All</option>
+          <option value="pass">Pass only</option>
+          <option value="fail">Fail only (0.00)</option>
         </select>
       </div>
       <div class="control search">
@@ -406,9 +421,20 @@
     <script>
       const statusEl = document.getElementById("status");
       const rowsEl = document.getElementById("rows");
+      const examEl = document.getElementById("exam");
       const limitEl = document.getElementById("limit");
       const groupEl = document.getElementById("group");
+      const cgpaEl = document.getElementById("cgpa");
       const searchEl = document.getElementById("search");
+      const pageTitleEl = document.getElementById("pageTitle");
+
+      const EXAM_LABELS = {
+        "merged-results.json": "Half Yearly 2026",
+        "merged-results-2.json": "Annual 2026",
+      };
+
+      // Holds the ranked, cleaned dataset for whichever exam is currently loaded.
+      let rankedData = [];
 
       function numeric(val) {
         const n = Number(val);
@@ -572,12 +598,18 @@
       function applyFilters(base) {
         const query = searchEl.value.trim().toLowerCase();
         const groupFilter = groupEl.value;
+        const cgpaFilter = cgpaEl.value;
 
         let filtered = base;
         if (groupFilter !== "all") {
           filtered = filtered.filter(
             (r) => (r.group || "").toLowerCase() === groupFilter.toLowerCase(),
           );
+        }
+        if (cgpaFilter === "pass") {
+          filtered = filtered.filter((r) => r.cgpa > 0);
+        } else if (cgpaFilter === "fail") {
+          filtered = filtered.filter((r) => r.cgpa === 0);
         }
         if (query) {
           filtered = filtered.filter((r) => {
@@ -593,9 +625,20 @@
         return filtered.slice(0, limit);
       }
 
-      async function load() {
+      function render() {
+        const view = applyFilters(rankedData);
+        renderTable(view);
+        statusEl.textContent = `${view.length} shown · ${rankedData.length} total ranked entries`;
+      }
+
+      async function loadExam(file) {
+        statusEl.textContent = `Loading ${file}…`;
+        rowsEl.innerHTML = "";
+        pageTitleEl.textContent = `NGDC - ${EXAM_LABELS[file] || file}`;
+        document.title = `NGDC - ${EXAM_LABELS[file] || file} Leaderboard`;
+
         try {
-          const res = await fetch("merged-results.json");
+          const res = await fetch(file);
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const raw = await res.json();
 
@@ -615,28 +658,24 @@
               return String(a.name || "").localeCompare(String(b.name || ""));
             });
 
-          const ranked = assignRanks(clean);
-
-          const render = () => {
-            const view = applyFilters(ranked);
-            renderTable(view);
-            statusEl.textContent = `${view.length} shown · ${ranked.length} total ranked entries`;
-          };
-
-          limitEl.addEventListener("change", render);
-          groupEl.addEventListener("change", render);
-          searchEl.addEventListener("input", () => {
-            window.clearTimeout(searchEl._timer);
-            searchEl._timer = window.setTimeout(render, 120);
-          });
-
+          rankedData = assignRanks(clean);
           render();
         } catch (err) {
-          statusEl.innerHTML = `<span class="error">Failed to load merged-results.json: ${err.message}</span>`;
+          rankedData = [];
+          statusEl.innerHTML = `<span class="error">Failed to load ${file}: ${err.message}</span>`;
         }
       }
 
-      load();
+      examEl.addEventListener("change", () => loadExam(examEl.value));
+      limitEl.addEventListener("change", render);
+      groupEl.addEventListener("change", render);
+      cgpaEl.addEventListener("change", render);
+      searchEl.addEventListener("input", () => {
+        window.clearTimeout(searchEl._timer);
+        searchEl._timer = window.setTimeout(render, 120);
+      });
+
+      loadExam(examEl.value);
     </script>
   </body>
 </html>
