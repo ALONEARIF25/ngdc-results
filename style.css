@@ -359,7 +359,7 @@ tr.open + .detail-row {
   margin: 10px 0px;
   font-size: 4.5rem;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .not-found {
