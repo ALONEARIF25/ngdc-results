@@ -4,6 +4,7 @@ const examEl = document.getElementById("exam");
 const limitEl = document.getElementById("limit");
 const groupEl = document.getElementById("group");
 const cgpaEl = document.getElementById("cgpa");
+const sortByEl = document.getElementById("sortBy");
 const searchEl = document.getElementById("search");
 const pageTitleEl = document.getElementById("pageTitle");
 
@@ -360,6 +361,49 @@ function computeMatchScore(item, query) {
   return 0;
 }
 
+function applySort(list) {
+  const sorted = [...list];
+  const mode = sortByEl.value || "rank";
+
+  switch (mode) {
+    case "id":
+      sorted.sort((a, b) => {
+        const aId = String(a.studentId ?? "").trim().toLowerCase();
+        const bId = String(b.studentId ?? "").trim().toLowerCase();
+
+        if (aId === bId) {
+          return (a.rank ?? Infinity) - (b.rank ?? Infinity);
+        }
+
+        return aId.localeCompare(bId, undefined, {
+          numeric: true,
+          sensitivity: "base",
+        });
+      });
+      return sorted;
+
+    case "az":
+      sorted.sort((a, b) => {
+        const aName = String(a.name ?? "").trim();
+        const bName = String(b.name ?? "").trim();
+
+        if (aName === bName) {
+          return (a.rank ?? Infinity) - (b.rank ?? Infinity);
+        }
+
+        return aName.localeCompare(bName, undefined, {
+          sensitivity: "base",
+        });
+      });
+      return sorted;
+
+    case "rank":
+    default:
+      sorted.sort((a, b) => (a.rank ?? Infinity) - (b.rank ?? Infinity));
+      return sorted;
+  }
+}
+
 function applyFilters(base) {
   const query = searchEl.value.trim().toLowerCase();
   const groupFilter = groupEl.value;
@@ -377,7 +421,6 @@ function applyFilters(base) {
     filtered = filtered.filter((r) => r.cgpa === 0);
   }
   if (query) {
-    // Keep items that match in any sensible way (id or name substring)
     filtered = filtered.filter((r) => {
       const name = (r.name || "").toLowerCase();
       const id = String(r.studentId || "");
@@ -387,21 +430,12 @@ function applyFilters(base) {
         phoneticKey(name).includes(phoneticKey(query))
       );
     });
-
-    // Score and sort: highest match score first, then by original rank (ascending)
-    filtered = filtered
-      .map((r) => ({ r, score: computeMatchScore(r, query) }))
-      .sort((a, b) => {
-        if (b.score !== a.score) return b.score - a.score;
-        return (a.r.rank || Infinity) - (b.r.rank || Infinity);
-      })
-      .map((x) => x.r);
   }
 
-  // Keep original ranks; do not recompute on filtered subset.
+  const sorted = applySort(filtered);
   const limit =
-    limitEl.value === "all" ? filtered.length : Number(limitEl.value);
-  return filtered.slice(0, limit);
+    limitEl.value === "all" ? sorted.length : Number(limitEl.value);
+  return sorted.slice(0, limit);
 }
 
 function render() {
@@ -448,6 +482,7 @@ examEl.addEventListener("change", () => loadExam(examEl.value));
 limitEl.addEventListener("change", render);
 groupEl.addEventListener("change", render);
 cgpaEl.addEventListener("change", render);
+sortByEl.addEventListener("change", render);
 searchEl.addEventListener("input", () => {
   window.clearTimeout(searchEl._timer);
   searchEl._timer = window.setTimeout(render, 120);
