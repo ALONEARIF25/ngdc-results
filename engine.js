@@ -11,6 +11,7 @@ const pageTitleEl = document.getElementById("pageTitle");
 const EXAM_LABELS = {
   "merged-results.json": "Half Yearly 2026",
   "merged-results-2.json": "Annual 2026",
+  "merged-results-3.json": "Pre-test 2026",
 };
 
 // Holds the ranked, cleaned dataset for whichever exam is currently loaded.
@@ -368,8 +369,12 @@ function applySort(list) {
   switch (mode) {
     case "id":
       sorted.sort((a, b) => {
-        const aId = String(a.studentId ?? "").trim().toLowerCase();
-        const bId = String(b.studentId ?? "").trim().toLowerCase();
+        const aId = String(a.studentId ?? "")
+          .trim()
+          .toLowerCase();
+        const bId = String(b.studentId ?? "")
+          .trim()
+          .toLowerCase();
 
         if (aId === bId) {
           return (a.rank ?? Infinity) - (b.rank ?? Infinity);
@@ -433,8 +438,7 @@ function applyFilters(base) {
   }
 
   const sorted = applySort(filtered);
-  const limit =
-    limitEl.value === "all" ? sorted.length : Number(limitEl.value);
+  const limit = limitEl.value === "all" ? sorted.length : Number(limitEl.value);
   return sorted.slice(0, limit);
 }
 
