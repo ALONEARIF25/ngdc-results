@@ -81,16 +81,6 @@
         </select>
       </div>
       <div class="control">
-        <label for="limit">Show</label>
-        <select id="limit">
-          <option value="10">Top 10</option>
-          <option value="25" selected>Top 25</option>
-          <option value="50">Top 50</option>
-          <option value="100">Top 100</option>
-          <option value="all">All</option>
-        </select>
-      </div>
-      <div class="control">
         <label for="group">Group</label>
         <select id="group">
           <option value="all" selected>All</option>
@@ -135,7 +125,7 @@
         <table aria-label="Leaderboard">
           <thead>
             <tr>
-              <th>Rank</th>
+              <th class="col-rank">Rank</th>
               <th>Photo</th>
               <th>Student</th>
               <th>Total Marks</th>
@@ -147,6 +137,16 @@
           </thead>
           <tbody id="rows"></tbody>
         </table>
+      </div>
+      <div id="loadMoreContainer" class="load-more-container" hidden>
+        <button
+          id="loadMore"
+          class="toggle-btn"
+          type="button"
+          style="padding: 7px 30px"
+        >
+          Load More
+        </button>
       </div>
     </main>
     <dialog id="photoViewer" class="photo-viewer" aria-label="Student photo">

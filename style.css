@@ -208,6 +208,7 @@ th {
 .col-rank {
   font-weight: 700;
   color: var(--accent-text);
+  text-align: center;
 }
 
 .col-photo {
@@ -251,8 +252,21 @@ th {
   box-shadow: var(--shadow);
 }
 
+.photo-viewer[open] {
+  animation: photo-pop-in 180ms ease-out both;
+}
+
+.photo-viewer.is-closing {
+  animation: photo-pop-out 150ms ease-in both;
+}
+
 .photo-viewer::backdrop {
   background: rgba(0, 0, 0, 0.72);
+  animation: photo-backdrop-in 180ms ease-out both;
+}
+
+.photo-viewer.is-closing::backdrop {
+  animation: photo-backdrop-out 150ms ease-in both;
 }
 
 .photo-viewer-content {
@@ -260,15 +274,6 @@ th {
   justify-items: center;
   gap: 12px;
   padding: 16px;
-  transform-origin: center;
-}
-
-.photo-viewer[open] .photo-viewer-content {
-  animation: photo-pop-in 180ms ease-out both;
-}
-
-.photo-viewer.is-closing .photo-viewer-content {
-  animation: photo-pop-out 150ms ease-in both;
 }
 
 .photo-viewer-content img {
@@ -301,9 +306,29 @@ th {
   }
 }
 
+@keyframes photo-backdrop-in {
+  from {
+    background: rgba(0, 0, 0, 0);
+  }
+  to {
+    background: rgba(0, 0, 0, 0.72);
+  }
+}
+
+@keyframes photo-backdrop-out {
+  from {
+    background: rgba(0, 0, 0, 0.72);
+  }
+  to {
+    background: rgba(0, 0, 0, 0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .photo-viewer[open] .photo-viewer-content,
-  .photo-viewer.is-closing .photo-viewer-content {
+  .photo-viewer[open],
+  .photo-viewer.is-closing,
+  .photo-viewer::backdrop,
+  .photo-viewer.is-closing::backdrop {
     animation-duration: 1ms;
   }
 }
@@ -360,6 +385,16 @@ tbody tr:hover {
 .toggle-btn:hover {
   background: var(--btn-hover);
   border-color: var(--btn-border-hover);
+}
+
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.load-more-container[hidden] {
+  display: none;
 }
 
 .detail-row {

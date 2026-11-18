@@ -1,7 +1,8 @@
 const statusEl = document.getElementById("status");
 const rowsEl = document.getElementById("rows");
 const examEl = document.getElementById("exam");
-const limitEl = document.getElementById("limit");
+const loadMoreContainerEl = document.getElementById("loadMoreContainer");
+const loadMoreEl = document.getElementById("loadMore");
 const groupEl = document.getElementById("group");
 const cgpaEl = document.getElementById("cgpa");
 const sortByEl = document.getElementById("sortBy");
@@ -12,6 +13,7 @@ const photoViewerImageEl = document.getElementById("photoViewerImage");
 const photoViewerCloseEl = document.getElementById("photoViewerClose");
 let photoTriggerEl = null;
 let photoViewerCloseTimer = null;
+let visibleCount = 20;
 
 const EXAM_LABELS = {
   "merged-results.json": "Half Yearly 2026",
@@ -171,7 +173,10 @@ function renderTable(data) {
         const photoButton = document.createElement("button");
         photoButton.type = "button";
         photoButton.className = "photo-open-btn";
-        photoButton.setAttribute("aria-label", `View photo of ${item.name || "student"}`);
+        photoButton.setAttribute(
+          "aria-label",
+          `View photo of ${item.name || "student"}`,
+        );
 
         const photo = document.createElement("img");
         photo.className = "student-photo";
@@ -201,7 +206,7 @@ function renderTable(data) {
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "toggle-btn";
-      btn.textContent = "Show detailed marks";
+      btn.textContent = "See breakdown";
       btn.addEventListener("click", () => {
         const isOpen = tr.classList.toggle("open");
         btn.textContent = isOpen
@@ -495,19 +500,23 @@ function applyFilters(base) {
   }
 
   const sorted = applySort(filtered);
-  const limit = limitEl.value === "all" ? sorted.length : Number(limitEl.value);
-  return sorted.slice(0, limit);
+  return sorted;
 }
 
-function render() {
-  const view = applyFilters(rankedData);
+function render(resetVisibleCount = false) {
+  if (resetVisibleCount) visibleCount = 20;
+  const filtered = applyFilters(rankedData);
+  const view = filtered.slice(0, visibleCount);
   renderTable(view);
   statusEl.textContent = `${view.length} shown · ${rankedData.length} total ranked entries`;
+  loadMoreContainerEl.hidden = view.length >= filtered.length;
 }
 
 async function loadExam(file) {
   statusEl.textContent = `Loading ${file}…`;
   rowsEl.innerHTML = "";
+  loadMoreContainerEl.hidden = true;
+  visibleCount = 20;
   pageTitleEl.textContent = `NGDC - ${EXAM_LABELS[file] || file}`;
   document.title = `NGDC - ${EXAM_LABELS[file] || file} Leaderboard`;
 
@@ -540,13 +549,16 @@ async function loadExam(file) {
 }
 
 examEl.addEventListener("change", () => loadExam(examEl.value));
-limitEl.addEventListener("change", render);
-groupEl.addEventListener("change", render);
-cgpaEl.addEventListener("change", render);
-sortByEl.addEventListener("change", render);
+groupEl.addEventListener("change", () => render(true));
+cgpaEl.addEventListener("change", () => render(true));
+sortByEl.addEventListener("change", () => render(true));
 searchEl.addEventListener("input", () => {
   window.clearTimeout(searchEl._timer);
-  searchEl._timer = window.setTimeout(render, 120);
+  searchEl._timer = window.setTimeout(() => render(true), 120);
+});
+loadMoreEl.addEventListener("click", () => {
+  visibleCount += 20;
+  render();
 });
 
 loadExam(examEl.value);
