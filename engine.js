@@ -7,6 +7,11 @@ const cgpaEl = document.getElementById("cgpa");
 const sortByEl = document.getElementById("sortBy");
 const searchEl = document.getElementById("search");
 const pageTitleEl = document.getElementById("pageTitle");
+const photoViewerEl = document.getElementById("photoViewer");
+const photoViewerImageEl = document.getElementById("photoViewerImage");
+const photoViewerCloseEl = document.getElementById("photoViewerClose");
+let photoTriggerEl = null;
+let photoViewerCloseTimer = null;
 
 const EXAM_LABELS = {
   "merged-results.json": "Half Yearly 2026",
@@ -75,6 +80,27 @@ function scheduleSpooderPromo() {
   spooderPromoTimer = window.setTimeout(showSpooderPromo, 1500);
 }
 
+function closePhotoViewer() {
+  if (!photoViewerEl.open || photoViewerEl.classList.contains("is-closing")) {
+    return;
+  }
+
+  photoViewerEl.classList.add("is-closing");
+  photoViewerCloseTimer = window.setTimeout(() => {
+    photoViewerEl.close();
+  }, 150);
+}
+
+photoViewerCloseEl.addEventListener("click", closePhotoViewer);
+photoViewerEl.addEventListener("click", (event) => {
+  if (event.target !== photoViewerImageEl) closePhotoViewer();
+});
+photoViewerEl.addEventListener("close", () => {
+  window.clearTimeout(photoViewerCloseTimer);
+  photoViewerEl.classList.remove("is-closing");
+  photoTriggerEl?.focus();
+});
+
 function renderTable(data) {
   rowsEl.innerHTML = "";
 
@@ -82,7 +108,7 @@ function renderTable(data) {
     const tr = document.createElement("tr");
     const td = document.createElement("td");
 
-    td.colSpan = 7;
+    td.colSpan = 8;
     td.className = "not-found";
     td.textContent = "এজ্জা এখানেও পাওয়া গেলনা তাকে, মুভ অন করেই ফেল";
 
@@ -95,6 +121,13 @@ function renderTable(data) {
     const tr = document.createElement("tr");
     const cells = [
       { label: "Rank", value: item.rank, className: "col-rank" },
+      {
+        label: "Photo",
+        value: item.studentId
+          ? `media/pfp/result-${item.studentId}.webp`
+          : null,
+        className: "col-photo",
+      },
       {
         label: "Student",
         value: `<div>${item.name || "Unknown"}</div><div class="muted">${item.studentId || ""}</div>`,
@@ -134,7 +167,31 @@ function renderTable(data) {
       const td = document.createElement("td");
       td.setAttribute("data-label", cell.label);
       if (cell.className) td.className = cell.className;
-      td.innerHTML = cell.value;
+      if (cell.label === "Photo" && cell.value) {
+        const photoButton = document.createElement("button");
+        photoButton.type = "button";
+        photoButton.className = "photo-open-btn";
+        photoButton.setAttribute("aria-label", `View photo of ${item.name || "student"}`);
+
+        const photo = document.createElement("img");
+        photo.className = "student-photo";
+        photo.src = cell.value;
+        photo.alt = "";
+        photo.loading = "lazy";
+        photoButton.appendChild(photo);
+        photoButton.addEventListener("click", () => {
+          photoTriggerEl = photoButton;
+          photoViewerImageEl.src = photo.src;
+          photoViewerImageEl.alt = item.name || "Student";
+          photoViewerEl.showModal();
+          photoViewerCloseEl.focus();
+        });
+        td.appendChild(photoButton);
+      } else if (cell.label === "Photo") {
+        td.innerHTML = '<span class="muted">—</span>';
+      } else {
+        td.innerHTML = cell.value;
+      }
       tr.appendChild(td);
     });
 
@@ -159,7 +216,7 @@ function renderTable(data) {
     const detailTr = document.createElement("tr");
     detailTr.className = "detail-row";
     const detailTd = document.createElement("td");
-    detailTd.colSpan = 7;
+    detailTd.colSpan = 8;
 
     const subjects = Array.isArray(item.subjects) ? item.subjects : [];
     const subjectRows = subjects
